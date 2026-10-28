@@ -18,3 +18,11 @@ jobs:
       - uses: damsoncloud/dcp.sdlc/.github/actions/initialise_devenv@main
         with:
           github_access_token: ${{ github.token }}
+
+      - name: Build the container image
+        shell: devenv shell bash -- -e {0}
+        run: image_build
+
+      - name: Run smoke tests against the container image
+        shell: devenv shell bash -- -e {0}
+        run: image_test --no-color
