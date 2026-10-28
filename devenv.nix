@@ -4,8 +4,18 @@
   ...
 }:
 
+let
+  port = "\${PORT:-8080}";
+in
 {
-  packages = [ pkgs.httpyac ];
+  env.IMAGE = "localhost/billing-disabler:local";
+
+  packages = [
+    # keep-sorted start
+    pkgs.httpyac
+    pkgs.podman
+    # keep-sorted end
+  ];
 
   languages.python = {
     enable = true;
@@ -14,7 +24,10 @@
     uv.sync.enable = true;
   };
 
-  git-hooks.hooks.mypy.settings.binPath = "${config.env.UV_PROJECT_ENVIRONMENT}/bin/mypy";
+  git-hooks.hooks = {
+    hadolint.files = "(Docker|Container)file$";
+    mypy.settings.binPath = "${config.env.UV_PROJECT_ENVIRONMENT}/bin/mypy";
+  };
 
   enterTest = ''
     uv run pytest
@@ -24,13 +37,62 @@
     function_run = {
       description = "Run the function locally (dry-run unless DRY_RUN=false)";
       exec = ''
-        uv run functions-framework --source=src/billing_disabler/main.py --target=handle_budget_notification --host=127.0.0.1 --port="''${PORT:-8080}"
+        uv run functions-framework --source=src/billing_disabler/main.py --target=handle_budget_notification --host=127.0.0.1 --port="${port}"
       '';
     };
     function_test = {
       description = "Send budget notification scenarios to the local function (interactive unless --all or -n <name> is given)";
       exec = ''
         httpyac send tests/http/budget_notifications.http -o short "$@"
+      '';
+    };
+    image_build = {
+      description = "Build the container image";
+      exec = ''
+        podman build \
+          --source-date-epoch "$(git -C "$DEVENV_ROOT" log -1 --format=%ct)" \
+          --build-arg PYTHON_VERSION=${config.languages.python.version} \
+          --build-arg UV_VERSION=${config.languages.python.uv.package.version} \
+          --tag "$IMAGE" \
+          --file "$DEVENV_ROOT/Containerfile" \
+          "$DEVENV_ROOT"
+      '';
+    };
+    image_run = {
+      description = "Run the container image locally with ADC mounted if present (dry-run unless DRY_RUN=false)";
+      exec = ''
+        set -euo pipefail
+        port="${port}"
+        adc="''${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}/application_default_credentials.json"
+        container_adc=/etc/gcloud/adc.json
+        adc_args=()
+        if [ -f "$adc" ]; then
+          # keep-id maps the host user to the image's user, so the credentials file stays readable
+          uid=$(podman image inspect --format '{{.Config.User}}' "$IMAGE")
+          adc_args=(
+            --userns="keep-id:uid=$uid,gid=$uid"
+            --volume "$adc:$container_adc:ro"
+            --env GOOGLE_APPLICATION_CREDENTIALS="$container_adc"
+          )
+        fi
+        # DRY_RUN is passed only when set, so the function's own default applies otherwise
+        exec podman run --rm --publish "127.0.0.1:$port:$port" --env PORT="$port" --env DRY_RUN "''${adc_args[@]}" "$IMAGE"
+      '';
+    };
+    image_test = {
+      description = "Run offline budget notification scenarios against the container image, without credentials";
+      packages = [ pkgs.curl ];
+      exec = ''
+        set -euo pipefail
+        export PORT="${port}"
+        container=$(podman run --detach --rm --publish "127.0.0.1:$PORT:$PORT" --env PORT "$IMAGE")
+        trap 'podman stop "$container" >/dev/null' EXIT
+        # The port is published before the function listens, so wait for an HTTP response rather than a TCP connection
+        for _ in $(seq 1 30); do
+          curl --silent --output /dev/null "http://127.0.0.1:$PORT" && break
+          sleep 1
+        done
+        function_test -t offline "$@"
       '';
     };
   };
