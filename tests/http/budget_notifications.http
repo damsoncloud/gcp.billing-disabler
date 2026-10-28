@@ -1,0 +1,106 @@
+# Budget notification scenarios for the locally running function (`function_run`).
+# Run with `function_test` and pick a scenario, or use `function_test --all` / `function_test -n <name>`.
+# Scenarios tagged `offline` need neither GCP credentials nor API access: `function_test -t offline`.
+# Scenarios tagged `gcp` resolve projects via GCP APIs, so they need credentials and real IDs:
+#   BILLING_ACCOUNT_ID=<id> BUDGET_ID=<id> function_test -t gcp
+
+@host = http://localhost:{{process.env.PORT || 8080}}
+
+{{
+  const billingAccountId = process.env.BILLING_ACCOUNT_ID || "012345-6789AB-CDEF01";
+  const budgetId = process.env.BUDGET_ID || "de72f49d-779b-4945-a127-4d6ce8def0bb";
+
+  const notificationData = (overrides = {}) => ({
+    budgetDisplayName: "local-test",
+    costAmount: 50,
+    costIntervalStart: "2026-10-01T00:00:00Z",
+    budgetAmount: 100,
+    budgetAmountType: "SPECIFIED_AMOUNT",
+    currencyCode: "EUR",
+    ...overrides,
+  });
+
+  exports.pubsubEvent = ({ data = notificationData(), attributes = {}, rawData } = {}) =>
+    JSON.stringify({
+      specversion: "1.0",
+      id: crypto.randomUUID(),
+      type: "google.cloud.pubsub.topic.v1.messagePublished",
+      source: "//pubsub.googleapis.com/projects/local/topics/budgets",
+      datacontenttype: "application/json",
+      data: {
+        message: {
+          attributes: { billingAccountId, budgetId, schemaVersion: "1.0", ...attributes },
+          data: Buffer.from(rawData ?? JSON.stringify(data)).toString("base64"),
+        },
+        subscription: "projects/local/subscriptions/budgets",
+      },
+    });
+  exports.notificationData = notificationData;
+}}
+
+###
+# Logged as not exceeded, no GCP API calls.
+# @name notExceeded
+# @tag offline
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent() }}
+
+?? status == 200
+
+###
+# Cost equal to the budget is not exceeded.
+# @name atBudget
+# @tag offline
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent({ data: notificationData({ costAmount: 100 }) }) }}
+
+?? status == 200
+
+###
+# Dry-run logs `billing_disabling_simulated` per project in the budget scope.
+# Returns 500 (redelivery) if the budget cannot be read, e.g. fake IDs or missing permissions.
+# @name exceeded
+# @tag gcp
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent({ data: notificationData({ costAmount: 150, alertThresholdExceeded: 1.0 }) }) }}
+
+?? status == 200
+
+###
+# Logged as `notification_discarded` and acknowledged.
+# @name unsupportedSchemaVersion
+# @tag offline
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent({ attributes: { schemaVersion: "2.0" } }) }}
+
+?? status == 200
+
+###
+# Logged as `notification_discarded` and acknowledged.
+# @name missingCostAmount
+# @tag offline
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent({ data: notificationData({ costAmount: undefined }) }) }}
+
+?? status == 200
+
+###
+# Logged as `notification_discarded` and acknowledged.
+# @name invalidJsonData
+# @tag offline
+POST {{host}}
+Content-Type: application/cloudevents+json
+
+{{ pubsubEvent({ rawData: "not json" }) }}
+
+?? status == 200

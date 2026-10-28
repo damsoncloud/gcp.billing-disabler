@@ -1,0 +1,46 @@
+[build-system]
+requires = ["uv_build >= 0.13.4, <0.14.0"]
+build-backend = "uv_build"
+
+[project]
+name = "billing-disabler"
+version = "0.1.0"
+description = "Event-driven disabling of GCP project billing on exceeded budgets"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    # keep-sorted start
+    "functions-framework==3.10.2",
+    "google-cloud-billing-budgets==1.22.0",
+    "google-cloud-billing==1.21.0",
+    "google-cloud-org-policy==1.19.0",
+    "google-cloud-resource-manager==1.19.0",
+    "pydantic-settings==2.16.2",
+    "pydantic==2.14.1",
+    # keep-sorted end
+]
+
+[dependency-groups]
+dev = [
+    # keep-sorted start
+    "mypy==2.4.0",
+    "pytest-cov==7.1.0",
+    "pytest==9.2.0",
+    # keep-sorted end
+]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+# create_autospec() returns Any and google.api_core exceptions are untyped
+warn_return_any = false
+disallow_untyped_calls = false
+
+[tool.pytest]
+addopts = ["--cov=billing_disabler", "--cov-report=term-missing"]
+
+[tool.coverage.report]
+fail_under = 100
