@@ -3,8 +3,16 @@
 # Scenarios tagged `offline` need neither GCP credentials nor API access: `function_test -t offline`.
 # Scenarios tagged `gcp` resolve projects via GCP APIs, so they need credentials and real IDs:
 #   BILLING_ACCOUNT_ID=<id> BUDGET_ID=<id> function_test -t gcp
+# A deployed function is targeted with BASE_URL; ID_TOKEN is sent as a bearer token for IAM-protected services:
+#   BASE_URL=https://<service>.run.app ID_TOKEN=$(gcloud auth print-identity-token) function_test -t offline
 
-@host = http://localhost:{{process.env.PORT || 8080}}
+@host = {{process.env.BASE_URL || `http://localhost:${process.env.PORT || 8080}`}}
+
+{{@request
+  if (process.env.ID_TOKEN) {
+    request.headers.Authorization = `Bearer ${process.env.ID_TOKEN}`;
+  }
+}}
 
 {{
   const billingAccountId = process.env.BILLING_ACCOUNT_ID || "012345-6789AB-CDEF01";
