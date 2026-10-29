@@ -3,11 +3,11 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1793184325,
-        "narHash": "sha256-rngDhGfXpRDoAaFYPP0P3eFtM1OAv3mVaY/fVf5uTBY=",
+        "lastModified": 1793199252,
+        "narHash": "sha256-LRgdAdMHL3uIX+kix/oyMzG+gMxzSYOzLrrRaoZthog=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "49a3dade202c026b980682f6fee09969b1720d82",
+        "rev": "0d6c556e5f862c14a75a543e2ee4fdb7acc005ad",
         "type": "github"
       },
       "original": {
@@ -21,11 +21,11 @@
       "flake": false,
       "locked": {
         "dir": "devenvbase",
-        "lastModified": 1793276681,
-        "narHash": "sha256-2JviFqyQjwc/spDCu9O9DI3/aVXttBabFIeYSqRSnEM=",
+        "lastModified": 1793279611,
+        "narHash": "sha256-dzTQxZodC2G72DZdhpd8QHtcGL5eRSoWUf8gx0ich0U=",
         "owner": "damsoncloud",
         "repo": "dcp.sdlc",
-        "rev": "40cffcebc61fc4a0b46ae736fe16fd5d945fb569",
+        "rev": "ed3007f07671eed08b23384f06340e175ce20a91",
         "type": "github"
       },
       "original": {
@@ -113,11 +113,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1793037606,
-        "narHash": "sha256-lD3BVxrJo8S8Bpn7Vz2ALGPM9n08BO2ZsJYM0+E4mZ8=",
+        "lastModified": 1793214880,
+        "narHash": "sha256-U0JInYCaitajZlOw9q0Ba7vgWdGsHCOZ5l8MkDpLPGM=",
         "owner": "cachix",
         "repo": "nixpkgs-python",
-        "rev": "4eab14cd319fed494e2c2d89ce52e30d60402e23",
+        "rev": "f2f14548c2762531d7abd61536d26c03c8dcc756",
         "type": "github"
       },
       "original": {
