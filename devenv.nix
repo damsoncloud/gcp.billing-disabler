@@ -40,6 +40,15 @@ in
         uv run functions-framework --source=src/billing_disabler/main.py --target=handle_budget_notification --host=127.0.0.1 --port="${port}"
       '';
     };
+    version_bump = {
+      description = "Set the project version to the latest release tag bumped by <major|minor|patch> and print it";
+      exec = ''
+        set -euo pipefail
+        latest=$(git -C "$DEVENV_ROOT" describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo v0.0.0)
+        uv version "''${latest#v}" --frozen >/dev/null
+        uv version --bump "$1" --no-sync --short
+      '';
+    };
     function_test = {
       description = "Send budget notification scenarios to the local function (interactive unless --all or -n <name> is given)";
       exec = ''
@@ -53,9 +62,24 @@ in
           --source-date-epoch "$(git -C "$DEVENV_ROOT" log -1 --format=%ct)" \
           --build-arg PYTHON_VERSION=${config.languages.python.version} \
           --build-arg UV_VERSION=${config.languages.python.uv.package.version} \
+          --build-arg VERSION="$(uv version --short)" \
+          --build-arg REVISION="$(git -C "$DEVENV_ROOT" rev-parse HEAD)" \
           --tag "$IMAGE" \
           --file "$DEVENV_ROOT/Containerfile" \
           "$DEVENV_ROOT"
+      '';
+    };
+    image_push = {
+      description = "Push the container image to REGISTRY_IMAGE tagged with the project version, its major.minor, major and latest";
+      exec = ''
+        set -euo pipefail
+        : "''${REGISTRY_IMAGE:?REGISTRY_IMAGE must be set}"
+        version=$(uv version --short)
+        IFS=. read -r major minor _ <<<"$version"
+        for tag in "$version" "$major.$minor" "$major" latest; do
+          podman tag "$IMAGE" "$REGISTRY_IMAGE:$tag"
+          podman push "$REGISTRY_IMAGE:$tag"
+        done
       '';
     };
     image_run = {
