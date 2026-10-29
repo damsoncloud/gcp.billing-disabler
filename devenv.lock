@@ -21,16 +21,17 @@
       "flake": false,
       "locked": {
         "dir": "devenvbase",
-        "lastModified": 1793288422,
-        "narHash": "sha256-Zg+51MHii97JYkkkOZn6AxvyiHPH/BJW1gIJOhwtfz4=",
+        "lastModified": 1793292647,
+        "narHash": "sha256-CDY2xyd4ZHFlAUBamBqBaJIj1qkyNLgJZ5pCGX4aD9c=",
         "owner": "damsoncloud",
         "repo": "dcp.sdlc",
-        "rev": "2e7fe022e405a68edd2196d3d81b71f1ab5cf52a",
+        "rev": "8c774e606af11e8a6ea9f618260088854bfd4804",
         "type": "github"
       },
       "original": {
         "dir": "devenvbase",
         "owner": "damsoncloud",
+        "ref": "v1.0.0",
         "repo": "dcp.sdlc",
         "type": "github"
       }
@@ -113,11 +114,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1793214880,
-        "narHash": "sha256-U0JInYCaitajZlOw9q0Ba7vgWdGsHCOZ5l8MkDpLPGM=",
+        "lastModified": 1793292708,
+        "narHash": "sha256-HN+U/q/abv8iyvOte1t0H7m+G746ZnbP8l4caEjfDY0=",
         "owner": "cachix",
         "repo": "nixpkgs-python",
-        "rev": "f2f14548c2762531d7abd61536d26c03c8dcc756",
+        "rev": "8c7d2fa4a57b4168d7aa8fa656fa5bcb4d2c6d4c",
         "type": "github"
       },
       "original": {

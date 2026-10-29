@@ -11,4 +11,4 @@ permissions:
 
 jobs:
   scan:
-    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-scan.yaml@main
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-scan.yaml@v1.0.0
