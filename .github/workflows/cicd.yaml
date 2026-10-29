@@ -12,32 +12,5 @@ permissions:
   security-events: write
 
 jobs:
-  cicd:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: damsoncloud/dcp.sdlc/.github/actions/initialise_devenv@main
-        with:
-          github_access_token: ${{ github.token }}
-
-      - name: Build the container image
-        shell: devenv shell bash -- -e {0}
-        run: image_build
-
-      - name: Run smoke tests against the container image
-        shell: devenv shell bash -- -e {0}
-        run: image_test --no-color
-
-      - name: Scan the container image for vulnerabilities
-        shell: devenv shell bash -- -e {0}
-        run: image_scan trivy.sarif
-
-      # Pull requests from forks get a read-only token, which cannot upload results
-      - if: >-
-          ${{ !cancelled() && hashFiles('trivy.sarif') != ''
-          && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-        name: Upload the vulnerability scan results to GitHub code scanning
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy.sarif
-          category: image-build
+  container-image:
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@main

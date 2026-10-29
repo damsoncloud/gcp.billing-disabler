@@ -11,25 +11,4 @@ permissions:
 
 jobs:
   scan:
-    runs-on: ubuntu-latest
-    env:
-      REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
-
-    steps:
-      - uses: damsoncloud/dcp.sdlc/.github/actions/initialise_devenv@main
-        with:
-          github_access_token: ${{ github.token }}
-          skip_devenv_test: 'true'
-
-      - name: Scan the latest published container image for vulnerabilities
-        shell: devenv shell bash -- -e {0}
-        run: |
-          podman pull "$REGISTRY_IMAGE:latest"
-          IMAGE="$REGISTRY_IMAGE:latest" image_scan trivy.sarif
-
-      - if: ${{ !cancelled() && hashFiles('trivy.sarif') != '' }}
-        name: Upload the vulnerability scan results to GitHub code scanning
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy.sarif
-          category: image-published
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-scan.yaml@main

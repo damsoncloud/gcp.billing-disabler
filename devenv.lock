@@ -21,11 +21,11 @@
       "flake": false,
       "locked": {
         "dir": "devenvbase",
-        "lastModified": 1793279611,
-        "narHash": "sha256-dzTQxZodC2G72DZdhpd8QHtcGL5eRSoWUf8gx0ich0U=",
+        "lastModified": 1793288422,
+        "narHash": "sha256-Zg+51MHii97JYkkkOZn6AxvyiHPH/BJW1gIJOhwtfz4=",
         "owner": "damsoncloud",
         "repo": "dcp.sdlc",
-        "rev": "ed3007f07671eed08b23384f06340e175ce20a91",
+        "rev": "2e7fe022e405a68edd2196d3d81b71f1ab5cf52a",
         "type": "github"
       },
       "original": {
