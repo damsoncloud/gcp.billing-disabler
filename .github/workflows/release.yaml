@@ -15,69 +15,12 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: release
-  cancel-in-progress: false
-
 jobs:
   release:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
       pull-requests: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
-
-    steps:
-      - uses: damsoncloud/dcp.sdlc/.github/actions/initialise_devenv@main
-        with:
-          checkout_fetch_depth: 0
-          github_access_token: ${{ github.token }}
-
-      - name: Bump the version from the latest release tag
-        id: version
-        shell: devenv shell bash -- -e {0}
-        env:
-          BUMP: ${{ inputs.bump }}
-        run: echo "version=$(version_bump "$BUMP")" >> "$GITHUB_OUTPUT"
-
-      - name: Build the container image
-        shell: devenv shell bash -- -e {0}
-        run: image_build
-
-      - name: Run smoke tests against the container image
-        shell: devenv shell bash -- -e {0}
-        run: image_test --no-color
-
-      - name: Scan the container image for vulnerabilities
-        shell: devenv shell bash -- -e {0}
-        run: image_scan
-
-      - name: Push the container image
-        shell: devenv shell bash -- -e {0}
-        run: |
-          podman login ghcr.io --username "$GITHUB_ACTOR" --password-stdin <<< "$GH_TOKEN"
-          image_push
-
-      - name: Create the GitHub release
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
-
-      - name: Open a pull request with the version bump
-        shell: devenv shell bash -- -e {0}
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          branch="release/v$VERSION"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch --create "$branch"
-          git add pyproject.toml uv.lock
-          git commit --message "Bump version to $VERSION"
-          git push origin "$branch"
-          gh pr create --base main --head "$branch" --title "Bump version to $VERSION" \
-            --body "Version bump after releasing $REGISTRY_IMAGE:$VERSION."
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-release.yaml@main
+    with:
+      bump: ${{ inputs.bump }}
