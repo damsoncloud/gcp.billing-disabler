@@ -25,11 +25,6 @@ in
     uv.sync.enable = true;
   };
 
-  git-hooks.hooks = {
-    hadolint.files = "(Docker|Container)file$";
-    mypy.settings.binPath = "${config.env.UV_PROJECT_ENVIRONMENT}/bin/mypy";
-  };
-
   enterTest = ''
     uv run pytest
   '';
