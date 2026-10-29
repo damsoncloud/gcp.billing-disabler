@@ -35,9 +35,11 @@ LABEL org.opencontainers.image.source="https://github.com/damsoncloud/gcp.billin
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}"
 
+# gunicorn creates its control socket under XDG_RUNTIME_DIR, falling back to the home directory the user does not have
 ENV PATH="${VENV}/bin:$PATH" \
     PORT=8080 \
     PYTHONUNBUFFERED=1 \
+    XDG_RUNTIME_DIR=/tmp \
     FUNCTION_TARGET=handle_budget_notification \
     FUNCTION_SOURCE=/opt/main.py
 
