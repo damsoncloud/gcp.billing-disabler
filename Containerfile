@@ -46,7 +46,9 @@ COPY --from=build ${VENV} ${VENV}
 # functions-framework accepts only a file path, so link the installed module to a stable location
 RUN ln -s "$(python -c 'import importlib.util; print(importlib.util.find_spec("billing_disabler.main").origin)')" "$FUNCTION_SOURCE"
 
-RUN useradd --no-create-home --shell /usr/sbin/nologin --uid "$APP_UID" billing-disabler
+# pip from the base image is not needed at runtime and vendors its own, often vulnerable, dependencies
+RUN /usr/local/bin/python -m pip uninstall --yes --root-user-action=ignore pip \
+    && useradd --no-create-home --shell /usr/sbin/nologin --uid "$APP_UID" billing-disabler
 USER ${APP_UID}
 
 EXPOSE ${PORT}
