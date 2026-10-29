@@ -23,3 +23,6 @@ updates:
       github-actions:
         patterns:
           - '*'
+    # Upgraded with devenvbase by the dcp.sdlc upgrade workflow
+    ignore:
+      - dependency-name: damsoncloud/dcp.sdlc*

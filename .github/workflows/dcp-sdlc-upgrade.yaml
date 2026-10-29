@@ -1,0 +1,16 @@
+name: dcp.sdlc upgrade
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: damsoncloud/dcp.sdlc/.github/workflows/dcp-sdlc-upgrade.yaml@v1.0.0

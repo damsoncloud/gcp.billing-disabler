@@ -13,4 +13,4 @@ permissions:
 
 jobs:
   container-image:
-    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@main
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@v1.0.0
