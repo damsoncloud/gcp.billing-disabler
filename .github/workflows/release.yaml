@@ -52,6 +52,10 @@ jobs:
         shell: devenv shell bash -- -e {0}
         run: image_test --no-color
 
+      - name: Scan the container image for vulnerabilities
+        shell: devenv shell bash -- -e {0}
+        run: image_scan
+
       - name: Push the container image
         shell: devenv shell bash -- -e {0}
         run: |

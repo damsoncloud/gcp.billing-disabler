@@ -14,6 +14,7 @@ in
     # keep-sorted start
     pkgs.httpyac
     pkgs.podman
+    pkgs.trivy
     # keep-sorted end
   ];
 
@@ -67,6 +68,19 @@ in
           --tag "$IMAGE" \
           --file "$DEVENV_ROOT/Containerfile" \
           "$DEVENV_ROOT"
+      '';
+    };
+    image_scan = {
+      description = "Scan the container image for vulnerabilities, failing on fixable HIGH/CRITICAL ones; optionally write a SARIF report: [sarif-file]";
+      exec = ''
+        set -euo pipefail
+        archive=$(mktemp --suffix=.tar)
+        trap 'rm -f "$archive"' EXIT
+        podman save --format docker-archive --output "$archive" "$IMAGE"
+        if [ -n "''${1:-}" ]; then
+          trivy image --input "$archive" --ignore-unfixed --format sarif --output "$1"
+        fi
+        trivy image --input "$archive" --ignore-unfixed --severity HIGH,CRITICAL --exit-code 1
       '';
     };
     image_push = {
