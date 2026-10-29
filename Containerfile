@@ -27,9 +27,13 @@ RUN uv sync --locked --no-dev --no-editable
 FROM docker.io/library/python:${PYTHON_VERSION}-slim
 ARG VENV
 ARG APP_UID=10001
+ARG VERSION
+ARG REVISION
 
 LABEL org.opencontainers.image.source="https://github.com/damsoncloud/gcp.billing-disabler" \
-      org.opencontainers.image.description="Event-driven disabling of GCP project billing on exceeded budgets"
+      org.opencontainers.image.description="Event-driven disabling of GCP project billing on exceeded budgets" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.revision="${REVISION}"
 
 ENV PATH="${VENV}/bin:$PATH" \
     PORT=8080 \
