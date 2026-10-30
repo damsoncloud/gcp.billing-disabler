@@ -42,5 +42,8 @@ disallow_untyped_calls = false
 [tool.pytest]
 addopts = ["--cov=billing_disabler", "--cov-report=term-missing"]
 
+[tool.coverage.run]
+branch = true
+
 [tool.coverage.report]
 fail_under = 100
