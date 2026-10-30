@@ -1,0 +1,16 @@
+name: dcp.sdlc check
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    permissions:
+      contents: read
+      issues: write
+    uses: damsoncloud/dcp.sdlc/.github/workflows/dcp-sdlc-check.yaml@v1.1.0
