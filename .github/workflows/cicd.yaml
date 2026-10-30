@@ -14,3 +14,10 @@ permissions:
 jobs:
   container-image:
     uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@v1.0.0
+
+  ci:
+    if: always()
+    needs: container-image
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.container-image.result }}" = success
