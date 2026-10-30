@@ -62,14 +62,21 @@ retention and, optionally, a dead-letter topic.
 
 ### Permissions
 
-The function's service account needs the following permissions. Verify them against Google's documentation before granting.
+The function's service account needs the following permissions, as documented for the
+[Budget API](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets/get),
+[Cloud Billing API](https://docs.cloud.google.com/billing/docs/how-to/modify-project) and
+[Organization Policy API](https://docs.cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies).
 
-| Action | Permissions | Granted on | Example role |
+| Action | Permissions | Granted on | Smallest predefined role |
 | --- | --- | --- | --- |
-| Read budgets | `billing.budgets.get` | Billing accounts | - |
+| Read budgets | `billing.budgets.get` | Billing accounts | Billing Account Viewer |
 | Resolve projects and read their billing information | `resourcemanager.projects.get` | Projects | Browser |
 | Detach billing accounts | `resourcemanager.projects.deleteBillingAssignment` | Projects | Project Billing Manager |
-| Replace organisation policies | `orgpolicy.policies.create`, `orgpolicy.policies.delete` | Projects | Organization Policy Administrator |
+| Replace organisation policies | `orgpolicy.policies.create`, `orgpolicy.policies.delete` | Organisation | Organization Policy Administrator |
+
+> [!IMPORTANT]
+> The Organization Policy Administrator role can only be granted on the organisation, which lets the service account set any organisation policy on any resource. A
+> custom role with only the two `orgpolicy.policies` permissions, granted on the affected folders or projects, may narrow this down, but has not been verified.
 
 The identity invoking the function, e.g. the Eventarc trigger's service account, needs `roles/run.invoker` on the Cloud Run service.
 
