@@ -13,4 +13,4 @@ jobs:
     permissions:
       contents: read
       issues: write
-    uses: damsoncloud/dcp.sdlc/.github/workflows/dcp-sdlc-check.yaml@v1.1.0
+    uses: damsoncloud/dcp.sdlc/.github/workflows/dcp-sdlc-check.yaml@v2.0.0
