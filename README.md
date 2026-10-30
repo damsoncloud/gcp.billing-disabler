@@ -124,7 +124,8 @@ The workflows call [dcp.sdlc's reusable workflows](https://github.com/damsonclou
 * [`release.yaml`](.github/workflows/release.yaml), dispatched manually on `main` with the part of the version to increase, releases a new version: it publishes the
   image to GitHub Packages, creates a GitHub release and opens a pull request bumping the version in `pyproject.toml`.
 * [`scan.yaml`](.github/workflows/scan.yaml) scans the `latest` published image weekly; results appear under Security, Code scanning.
-* [`dcp-sdlc-upgrade.yaml`](.github/workflows/dcp-sdlc-upgrade.yaml) opens a weekly pull request upgrading dcp.sdlc and the devenv inputs.
+* [`dcp-sdlc-check.yaml`](.github/workflows/dcp-sdlc-check.yaml) opens an issue when a newer dcp.sdlc release is available; upgrade with
+  `devenv shell -- dcp_sdlc_upgrade_pr`.
 
 Dependabot keeps Python dependencies and GitHub Actions up to date.
 
