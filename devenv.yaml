@@ -1,7 +1,7 @@
 ---
 inputs:
   devenvbase:
-    url: github:damsoncloud/dcp.sdlc/v1.0.0?dir=devenvbase
+    url: github:damsoncloud/dcp.sdlc/v1.0.1?dir=devenvbase
     flake: false
   git-hooks:
     url: github:cachix/git-hooks.nix

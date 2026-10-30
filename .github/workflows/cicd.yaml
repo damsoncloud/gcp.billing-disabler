@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   container-image:
-    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@v1.0.0
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-ci.yaml@v1.0.1
 
   ci:
     if: always()
