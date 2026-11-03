@@ -16,14 +16,14 @@ dependencies = [
     "google-cloud-org-policy==1.19.0",
     "google-cloud-resource-manager==1.19.0",
     "pydantic-settings==2.16.2",
-    "pydantic==2.14.1",
+    "pydantic==2.14.2",
     # keep-sorted end
 ]
 
 [dependency-groups]
 dev = [
     # keep-sorted start
-    "mypy==2.4.0",
+    "mypy==2.4.1",
     "pytest-cov==7.1.0",
     "pytest==9.2.0",
     # keep-sorted end
