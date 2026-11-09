@@ -35,6 +35,12 @@ LABEL org.opencontainers.image.source="https://github.com/damsoncloud/gcp.billin
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.revision="${REVISION}"
 
+# Debian security fixes reach the base image with a delay, so apply them at build time; apt itself is not needed at runtime
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes \
+    && dpkg --purge apt libapt-pkg7.0 \
+    && rm -rf /etc/apt /var/cache/apt /var/lib/apt
+
 # gunicorn creates its control socket under XDG_RUNTIME_DIR, falling back to the home directory the user does not have
 ENV PATH="${VENV}/bin:$PATH" \
     PORT=8080 \
