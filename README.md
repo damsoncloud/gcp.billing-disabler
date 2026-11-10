@@ -47,8 +47,10 @@ all actions are idempotent.
 The image is available without authentication as `ghcr.io/damsoncloud/gcp.billing-disabler`, tagged with each release version (e.g. `1.1.2`), its `major.minor` (`1.1`) and `major`
 (`1`) versions, and `latest`. Pin a reviewed version.
 
-Deploy it as a Cloud Run function triggered by the Pub/Sub topic connected to the budgets, i.e. with a trigger for the `google.cloud.pubsub.topic.v1.messagePublished` event. Failed
-invocations are redelivered according to the subscription's retry policy, so configure its message retention and, optionally, a dead-letter topic.
+Deploy it as a Cloud Run service invoked by a push subscription of the Pub/Sub topic connected to the budgets, authenticating with an OIDC token of a service account. The
+Functions Framework converts the push requests to CloudEvents, so an Eventarc trigger for the `google.cloud.pubsub.topic.v1.messagePublished` event, which creates such a
+subscription, is not needed. Failed invocations are redelivered according to the subscription's retry policy, so configure its message retention and, optionally, a dead-letter
+topic.
 
 ### Configuration
 
@@ -75,7 +77,7 @@ The function's service account needs the following permissions, as documented fo
 > The Organization Policy Administrator role can only be granted on the organisation, which lets the service account set any organisation policy on any resource. A custom role with
 > only the two `orgpolicy.policies` permissions, granted on the affected folders or projects, may narrow this down, but has not been verified.
 
-The identity invoking the function, e.g. the trigger's service account, needs `roles/run.invoker` on the Cloud Run service.
+The identity invoking the function, i.e. the push subscription's service account, needs `roles/run.invoker` on the Cloud Run service.
 
 ## Logging and alerting
 
