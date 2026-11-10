@@ -16,7 +16,7 @@ dependencies = [
     "google-cloud-org-policy==1.19.0",
     "google-cloud-resource-manager==1.19.0",
     "pydantic-settings==2.16.2",
-    "pydantic==2.14.2",
+    "pydantic==2.14.3",
     # keep-sorted end
 ]
 
