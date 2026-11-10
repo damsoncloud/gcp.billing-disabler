@@ -64,6 +64,8 @@ class DenyServiceUsage:
     """
 
     CONSTRAINT = "gcp.restrictServiceUsage"
+    # The constraint rejects deny-all rules, but an allowlist denies all services not in it, so allow a non-existent one
+    ALLOWED_PLACEHOLDER = "billing-disabler.invalid"
 
     def __init__(self, client: orgpolicy_v2.OrgPolicyClient) -> None:
         """Initialise the action.
@@ -92,7 +94,13 @@ class DenyServiceUsage:
                 name=policy_name,
                 spec=orgpolicy_v2.PolicySpec(
                     inherit_from_parent=False,
-                    rules=[orgpolicy_v2.PolicySpec.PolicyRule(deny_all=True)],
+                    rules=[
+                        orgpolicy_v2.PolicySpec.PolicyRule(
+                            values=orgpolicy_v2.PolicySpec.PolicyRule.StringValues(
+                                allowed_values=[self.ALLOWED_PLACEHOLDER],
+                            ),
+                        ),
+                    ],
                 ),
             ),
         )
