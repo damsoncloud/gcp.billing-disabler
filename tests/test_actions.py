@@ -50,7 +50,7 @@ def test_detach_billing_account_skips_disabled_billing(billing_client: MagicMock
 
 
 def test_deny_service_usage_creates_policy(org_policy_client: MagicMock, project: Project) -> None:
-    """Policy denying all services, not inheriting from parents, is created."""
+    """Policy allowing only a non-existent service, not inheriting from parents, is created."""
     org_policy_client.delete_policy.side_effect = NotFound("policy not found")
 
     DenyServiceUsage(org_policy_client).execute(project)
@@ -61,7 +61,13 @@ def test_deny_service_usage_creates_policy(org_policy_client: MagicMock, project
             name=POLICY_NAME,
             spec=orgpolicy_v2.PolicySpec(
                 inherit_from_parent=False,
-                rules=[orgpolicy_v2.PolicySpec.PolicyRule(deny_all=True)],
+                rules=[
+                    orgpolicy_v2.PolicySpec.PolicyRule(
+                        values=orgpolicy_v2.PolicySpec.PolicyRule.StringValues(
+                            allowed_values=["billing-disabler.invalid"],
+                        ),
+                    ),
+                ],
             ),
         ),
     )

@@ -19,7 +19,8 @@ For every budget notification, the function:
 5. Otherwise, for each project:
    1. detaches the project from its billing account, unless billing is already disabled,
    2. deletes any existing project-level organisation policy for the `gcp.restrictServiceUsage` constraint,
-   3. creates a project-level policy for that constraint which denies all supported services and does not inherit from parents,
+   3. creates a project-level policy for that constraint which denies all supported services and does not inherit from parents; the constraint does not accept
+      denying all values, so the policy allows only a non-existent service, `billing-disabler.invalid`,
    4. logs the result.
 
 Projects are processed independently. If any of them fails, the function returns an error after processing the others, so Pub/Sub redelivers the notification;
