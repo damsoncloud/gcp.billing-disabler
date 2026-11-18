@@ -21,6 +21,6 @@ jobs:
       contents: write
       packages: write
       pull-requests: write
-    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-release.yaml@v2.0.1
+    uses: damsoncloud/dcp.sdlc/.github/workflows/container-image-release.yaml@v2.2.0
     with:
       bump: ${{ inputs.bump }}
